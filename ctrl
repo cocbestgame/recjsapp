@@ -1,0 +1,34 @@
+@RequestMapping(value = "/uploadimage", method = RequestMethod.POST)
+	public String fileupload(@RequestParam("profile") CommonsMultipartFile file, HttpSession session, Model model)  {
+		System.out.println("uplod control");
+		System.err.println(file.getName());
+		System.err.println(file.getOriginalFilename());
+		System.err.println(file.getSize());
+		System.err.println(file.getContentType());
+		System.err.println(file.getStorageDescription());
+		System.err.println(file.getFileItem());
+		
+		byte[] data = file.getBytes();
+		System.err.println(data);
+		
+		//we have save this file to server
+		String path = session.getServletContext().getRealPath("resources/image/") + file.getOriginalFilename();
+		System.out.println("path------>  " +path);
+		//write data to path
+		FileOutputStream fos;
+		try {
+			fos = new FileOutputStream(path);
+			fos.write(data);
+			fos.close();
+			System.err.println("File uplodeddd");
+			model.addAttribute("msg","uploded sussess");
+			model.addAttribute("filename",file.getOriginalFilename());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.err.println("File uploding error");
+			model.addAttribute("msg","uploding error");
+		}		
+		
+		return "filesucsess";
+	}
