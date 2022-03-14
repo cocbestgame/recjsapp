@@ -23,9 +23,8 @@ li {
 <body>
 
  <h1>Simple Recorder.js demo</h1>
-    
-    <div id="controls">
-    
+ <form action="uploadimage" method="post" enctype="multipart/form-data">   
+    <div id="controls">    
   	 <button type="button" id="recordButton">Record</button>
   	 <button type="button" id="pauseButton" disabled>Pause</button>
   	 <button type="button" id="stopButton" disabled>Stop</button>
@@ -38,6 +37,32 @@ li {
     <!-- inserting these scripts at the end to be able to use all the elements in the DOM -->
   	<script src="resources/js/recorder.js"></script>
   	<script src="resources/js/app.js"></script>
+  	
+  	<button type="submit" style="margin: 50px;" value="Upload" onclick="return valid();">Upload</button>
+
+
+
+</form>
+
+<script type="text/javascript">
+function valid() {
+	debugger;
+	const inputfile = document.querySelector('#file_input');
+	if (inputfile.value == "") {
+		alert("plz uplod audio")
+		return false;
+	}
+	
+}
+
+
+// var rightNow = new Date();
+// var res = rightNow.toISOString().slice(0,10).replace(/-/g,"");
+
+
+// var ds = (new Date()).toLocaleString().replace(/[^0-9]/g, "");
+// alert(ds);
+</script>
 
 </body>
 </html>
