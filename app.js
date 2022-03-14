@@ -26,20 +26,20 @@ function startRecording() {
 		Simple constraints object, for more advanced audio features see
 		https://addpipe.com/blog/audio-constraints-getusermedia/
 	*/
-    
-    var constraints = { audio: true, video:false }
 
- 	/*
-    	Disable the record button until we get a success or fail from getUserMedia() 
-	*/
+	var constraints = { audio: true, video: false }
+
+	/*
+	  Disable the record button until we get a success or fail from getUserMedia() 
+  */
 
 	recordButton.disabled = true;
 	stopButton.disabled = false;
 	pauseButton.disabled = false
 
 	/*
-    	We're using the standard promise based getUserMedia() 
-    	https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
+		We're using the standard promise based getUserMedia() 
+		https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
 	*/
 
 	navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
@@ -54,11 +54,11 @@ function startRecording() {
 		audioContext = new AudioContext();
 
 		//update the format 
-		document.getElementById("formats").innerHTML="Format: 1 channel pcm @ "+audioContext.sampleRate/1000+"kHz"
+		document.getElementById("formats").innerHTML =  "Format: 1 channel pcm @ " + audioContext.sampleRate / 1000 + "kHz"
 
 		/*  assign to gumStream for later use  */
 		gumStream = stream;
-		
+
 		/* use the stream */
 		input = audioContext.createMediaStreamSource(stream);
 
@@ -66,7 +66,7 @@ function startRecording() {
 			Create the Recorder object and configure to record mono sound (1 channel)
 			Recording 2 channels  will double the file size
 		*/
-		rec = new Recorder(input,{numChannels:1})
+		rec = new Recorder(input, { numChannels: 1 })
 
 		//start the recording process
 		rec.record()
@@ -74,33 +74,33 @@ function startRecording() {
 		console.log("Recording started");
 
 	}).catch(function(err) {
-	  	//enable the record button if getUserMedia() fails
-    	recordButton.disabled = false;
-    	stopButton.disabled = true;
-    	pauseButton.disabled = true
-    	console.log("Recording Does not started : - " +err);
-    	alert(err);
+		//enable the record button if getUserMedia() fails
+		recordButton.disabled = false;
+		stopButton.disabled = true;
+		pauseButton.disabled = true
+		console.log("Recording Does not started : - " + err);
+		alert(err);
 	});
 }
 
-function pauseRecording(){
-	console.log("pauseButton clicked rec.recording=",rec.recording );
-	if (rec.recording){
+function pauseRecording() {
+	console.log("pauseButton clicked rec.recording=", rec.recording);
+	if (rec.recording) {
 		//pause
 		rec.stop();
-		pauseButton.innerHTML="Resume";
-	}else{
+		pauseButton.innerHTML = "Resume";
+	} else {
 		//resume
 		rec.record()
-		pauseButton.innerHTML="Pause";
+		pauseButton.innerHTML = "Pause";
 
 	}
 }
 
 function stopRecording() {
 	console.log("stopButton clicked");
-	
-	
+
+
 
 	//disable the stop button, enable the record too allow for new recordings
 	stopButton.disabled = true;
@@ -108,8 +108,8 @@ function stopRecording() {
 	pauseButton.disabled = true;
 
 	//reset button just in case the recording is stopped while paused
-	pauseButton.innerHTML="Pause";
-	
+	pauseButton.innerHTML = "Pause";
+
 	//tell the recorder to stop the recording
 	rec.stop();
 
@@ -121,13 +121,14 @@ function stopRecording() {
 }
 
 function createDownloadLink(blob) {
-	
+
 	var url = URL.createObjectURL(blob);
 	var au = document.createElement('audio');
 	var li = document.createElement('li');
 	var li2 = document.createElement('li');
 	var li3 = document.createElement('li');
-	var link = document.createElement('button');
+	var link = document.createElement('a');
+	var savetodiskButton = document.createElement('button');
 	var deleteButton = document.createElement('button');
 
 	//name of .wav file to use during upload and download (without extendion)
@@ -138,60 +139,75 @@ function createDownloadLink(blob) {
 	au.src = url;
 
 	//save to disk link
+	//link.type = "link";
 	link.href = url;
-	link.download = filename+".wav"; //download forces the browser to donwload the file using the  filename
-	link.innerHTML = "Save to disk";
-	 deleteButton.innerHTML = "Delete";
+	link.download = filename + ".wav"; //download forces the browser to donwload the file using the  filename
+	
+	savetodiskButton.type ="button";
+	savetodiskButton.innerHTML = "Save to disk";
+	link.appendChild(savetodiskButton);
+	deleteButton.type = "button";
+	deleteButton.innerHTML = "Delete";
 
 	//add the new audio element to li
 	li.appendChild(au);
-	
+
 	//add the filename to the li
-	li2.appendChild(document.createTextNode(filename+".wav"))
+	li2.appendChild(document.createTextNode("rec.wav"))
 
 	//add the save to disk link to li
 	li3.appendChild(link);
-	
-	
+
+
 	//upload link
 	var upload = document.createElement('button');
-	upload.href="#";
+	upload.type = "button";
+	upload.href = "#";
 	upload.innerHTML = "Upload";
-	upload.addEventListener("click", function(event){
-//		  var xhr=new XMLHttpRequest();
-//		  xhr.onload=function(e) {
-//		      if(this.readyState === 4) {
-//		          console.log("Server returned: ",e.target.responseText);
-//		      }
-//		  };
-//		  var fd=new FormData();
-//		  fd.append("audio_data",blob, filename);
-//		  xhr.open("POST","upload.php",true);
-//		  xhr.send(fd);
-const myFile = new File([blob], filename+".wav", {
-			  type: blob.type,
-			});
-		
-		 let container = new DataTransfer(); 
-		    container.items.add(myFile);
-		    document.querySelector('#file_input').files = container.files;
+	upload.addEventListener("click", function() {
+		//		  var xhr=new XMLHttpRequest();
+		//		  xhr.onload=function(e) {
+		//		      if(this.readyState === 4) {
+		//		          console.log("Server returned: ",e.target.responseText);
+		//		      }
+		//		  };
+		//		  var fd=new FormData();
+		//		  fd.append("audio_data",blob, filename);
+		//		  xhr.open("POST","upload.php",true);
+		//		  xhr.send(fd);
+		const myFile = new File([blob], "recording1.wav", {
+			type: blob.type,
+		});
 
-			console.log(myFile);
-
+		let container = new DataTransfer();
+		container.items.add(myFile);
+		document.querySelector('#file_input').files = container.files;
+		console.log(myFile);
 	})
-	li3.appendChild(document.createTextNode (" "))//add a space in between
+	
+	li3.appendChild(document.createTextNode(" "))//add a space in between
 	li3.appendChild(upload)//add the upload link to li
-	li3.appendChild(document.createTextNode (" "))//add a space in between
+	li3.appendChild(document.createTextNode(" "))//add a space in between
 	li3.appendChild(deleteButton); // add delete button
 
 	//add the li element to the ol
 	recordingsList.appendChild(li);
 	recordingsList.appendChild(li2);
 	recordingsList.appendChild(li3);
-	deleteButton.onclick = function(e) {
-	recordButton.disabled = false; // turn on recording button
-	const input = document.querySelector('#file_input');
-	input.value =''; //empty uploded file in input tag
-    let evtTgt = e.target;
-    evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);}
+
+	deleteButton.onclick = function() {
+		recordButton.disabled = false; // turn on recording button
+		const input = document.querySelector('#file_input');
+		input.value = ''; //empty uploded file in input tag
+		//document.getElementById("recordingsList").innerHTML = '';
+
+		function removeAllChildNodes(parent) {
+			while (parent.firstChild) {
+				parent.removeChild(parent.firstChild);
+			}
+		}
+		const container = document.querySelector('#recordingsList');
+		removeAllChildNodes(container);
+
+	}
 }
